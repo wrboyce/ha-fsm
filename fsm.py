@@ -115,7 +115,9 @@ class Fsm:
     def change_state(self, state):
         self.state = state
         if self.entity:
-            self.hass.set_state(self.entity, state=self.state.name)
+            self.hass.set_state(
+                self.entity, state=self.state.name, attributes=self.state.attributes
+            )
 
     # Call check when something happened
     def check(self):
@@ -170,24 +172,24 @@ class State:
         self,
         id=None,
         name=None,
+        attributes=None,
         transitions=None,
         enter_programs=None,
         exit_programs=None,
     ):
         # - id is optional but useful for debugging
         # - name is the name of this state. If set to None, it will use id instead
+        # - attributes is a dictionary of attributes to set when active
         # - transitions is a list of; Transition objects
         # - enter_programs is an optional list of; objects containing a 'program' function, or a python string to be executed
         # - exit_programs is an optional list of; objects containing a 'program' function, or a python string to be executed
 
         self.id = id
-        self.name = name
+        self.name = name or self.id
+        self.attributes = attributes or {}
         self.enter_programs = enter_programs
         self.exit_programs = exit_programs
         self.transitions = transitions
-
-        if self.name == None:
-            self.name = self.id
 
     def initialize(self, hass, fsm, index):
         try:

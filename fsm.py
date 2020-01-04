@@ -15,7 +15,7 @@ class Fsm:
         # - id is optional but useful for debugging
         # - states is a required list of; State objects
         # - entity is an optional hass entity where the current state is published
-        # - entity is an optional  hass entity where the health of this fsm is made public
+        # - entity is an optional hass entity where the health of this fsm is made public
 
         self.hass = hass
         self.id = id
@@ -36,10 +36,6 @@ class Fsm:
         if self.entity:
             # Try loading the state from Home Assistant.
             entity_state = self.hass.get_state(self.entity)
-            assert entity_state, "Entity not found: {} {} {}".format(
-                __name__, self.id, self.entity
-            )
-
             if entity_state in {state.id for key, state in self.states_dict.items()}:
                 self.state = self.states_dict[entity_state]
             else:
@@ -49,11 +45,6 @@ class Fsm:
                 )
 
             # Listen for state changes initiated in Home Assistant.
-            temp = self.hass.get_state(self.entity)
-            assert temp, "Entity not found: {} {} {}".format(
-                __name__, self.id, self.entity
-            )
-
             self.hass.log(
                 "{}Added listen_state <{}> <{}>".format(
                     self.prefix(), self.entity, self.external_state_callback
